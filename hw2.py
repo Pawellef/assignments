@@ -28,7 +28,7 @@ def format_date(date: datetime.date):
 
 
 def countries_with_no_deaths_count(date: datetime.date) -> int:
-    """
+  """
     Returns the number of areas (countries, region, provinces) in the data set
     where infections were found, but nobody died on a given date. (DO NOT GROUP BY)
     Ex.
@@ -38,10 +38,20 @@ def countries_with_no_deaths_count(date: datetime.date) -> int:
     46
     :param date: Date object of the date to get the results for
     :return: Number of countries with no deaths but with active cases on a given date as an integer
-    """
-    
-    # Your code goes here
-    pass
+  """   
+  No_die=dfD.loc[dfD[format_date(date)]==0]
+  Infected=dfC.loc[dfC[format_date(date)]>0]
+
+  Infected_province=set(Infected.loc[pd.notna(Infected['Province/State'])]['Province/State'])
+  Infected_country=set(Infected.loc[pd.Series.isna(Infected['Province/State'])]['Country/Region'])
+
+  No_die_province=set(No_die.loc[pd.notna(No_die['Province/State'])]['Province/State'])
+  No_die_country=set(No_die.loc[pd.Series.isna(No_die['Province/State'])]['Country/Region'])
+
+  Country=Infected_country.intersection(No_die_country)
+  Province=Infected_province.intersection(No_die_province)
+  Country.update(Province)
+  return len(Country)
 
 
 def more_cured_than_deaths_indices(date: datetime.date) -> List[int]:
